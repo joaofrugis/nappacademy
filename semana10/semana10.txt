@@ -1,0 +1,61 @@
+1 - O integrador coleta as informações dos arquivos de credenciais e retorna as informações do banco de dados e CSV em formato de dicionário.
+
+2 - O arquivo credenciais3.txt esta sendo apontado para um arquivo CSV, mas está marcado como SQLITE. O SQLITE precisa de um campo chamado DB.
+
+3 - O arquivo esta apontado para um DB, porém esta marcado como CSV. Mesmo do execício anterior mas ao contrário.
+
+4 - O arquivo banco3.db não existe. Ao tentar acessá-lo ele é gerado, porém as tabelas não existem.
+
+5 - 
+def carregar_credenciais(arquivo):
+	
+	credenciais = {}
+	
+	try:
+		with open(arquivo) as file:
+			for line in file:
+				if line.startswith("#") or line == "\n":
+					continue
+				key, valor = line.split('==>')
+				valor = valor.replace('\n', '')
+				credenciais[key] = valor
+	except FileNotFoundError:
+		raise FileNotFoundError('Arquivo não encontrado: ' + arquivo)
+	
+	return credenciais
+
+6 - 
+class Estrategia_SQLite(Estrategia):
+	def execute(self, dados):
+		lista_registros = []
+		db = dados['db']
+		with closing(sqlite3.connect(db)) as conn:
+			cursor = conn.cursor()
+			cursor.execute("SELECT total, vendido_em FROM vendas;")
+			for linha in cursor.fetchall():
+				lista_registros.append(linha)
+		return lista_registros
+	
+	def parametros_necessarios(self):
+		return ('algoritmo', 'db')
+	
+	def nome(self):
+		return 'Algoritmo SQLite'
+
+
+7 - 
+class Estrategia_CSV(Estrategia):
+	def execute(self, dados):
+		lista_registros = []
+		arquivo = dados['arquivo']
+		with open(arquivo, newline='\n') as csvfile:
+			reader = csv.DictReader(csvfile)
+			for line in reader:
+				lista_registros.append((line["total"], line["vendido_em"]))
+		return lista_registros
+	
+	def parametros_necessarios(self):
+		return ('algoritmo', 'arquivo')
+	
+	def nome(self):
+		return 'Algoritmo CSV'
