@@ -2,6 +2,7 @@ from BancoNapp.contas.Conta import Conta
 
 
 class ContaPessoaJuridica(Conta):
+<<<<<<< HEAD
     """
     Classe representa a conta corrente de pessoa física.
     Limite padrão da conta: R$ 500,00
@@ -76,3 +77,6 @@ class ContaPessoaJuridica(Conta):
         """
         return self.extrato
         
+=======
+    pass
+>>>>>>> upstream/master
